@@ -9,7 +9,7 @@ const App = () => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   try {
-    const value = await AsyncStorage.setItem(
+    const value = AsyncStorage.setItem(
       'tasks',
       []
     );
@@ -17,18 +17,19 @@ const App = () => {
       setTask(value);
     }, [value]);
   } catch (error) {
-    console.error("No se guardara la data en el dispositivo");
+    console.log("No se guardara la data en el dispositivo");
+    console.error(error)
   }
   
-  const addTask = async(name, description) => {
+  const addTask = (name, description) => {
     const newTask = {
       id: tasks.length + 1,
       name,
       description,
       completed: false,
     };
-    await mergeItem(key: string, value: string, [callback]: ?(error: ?Error) => void);
     setTasks([...tasks, newTask]);
+    setItem("tasks",JSON.stringify(tasks), (error) => console.error(error));
   };
 
   const completeTask = (taskId) => {
@@ -36,16 +37,21 @@ const App = () => {
       task.id === taskId ? { ...task, completed: !task.completed } : task
     );
     setTasks(updatedTasks);
+    setItem("tasks",JSON.stringify(tasks), (error) => console.error(error));
   };
 
   const deleteTask = (taskId) => {
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
+    setItem("tasks",JSON.stringify(tasks), (error) => console.error(error));
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TaskList tasks={} completeTask={completeTask} deleteTask={deleteTask} />
+      <TaskList tasks={getItem("tasks",(error) => {
+        console.error(error);
+        return tasks;
+      })} completeTask={completeTask} deleteTask={deleteTask} />
       <Button title="Add Task" onPress={() => setModalVisible(true)} />
       <AddTaskModal
         visible={isModalVisible}
